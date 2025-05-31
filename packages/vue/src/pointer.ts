@@ -1,6 +1,5 @@
-import { Coord, DulRenderer, Object2D } from '@duljs/core'
+import { Coord, DulRenderer, Object2D, RayCaster } from '@duljs/core'
 import { ref, ShallowRef, watchEffect } from 'vue'
-import { RayCaster } from './raycaster'
 
 export type Object2DWithEventHandlers = Object2D &
   Partial<Object2DPointerEvents>

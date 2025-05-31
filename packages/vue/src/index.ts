@@ -1,5 +1,4 @@
 export * from './nodeops'
 export * from './pointer'
-export * from './raycaster'
 export * from './vue'
 export { default as Dul } from './Renderer.vue'

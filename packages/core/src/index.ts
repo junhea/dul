@@ -2,6 +2,7 @@ export * from './util'
 export * from './camera'
 export * from './renderer'
 export * from './object'
+export * from './raycaster'
 
 export interface Coord {
   x: number

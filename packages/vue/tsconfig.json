@@ -1,6 +1,7 @@
 {
   "extends": "@duljs/config/tsconfig",
   "compilerOptions": {
+    "rootDir": ".",
     "outDir": "dist",
     "emitDeclarationOnly": true,
     "skipLibCheck": true,
