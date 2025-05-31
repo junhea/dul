@@ -12,7 +12,7 @@
     "url": "git+https://github.com/junhea/dul.git"
   },
   "license": "MIT",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "exports": "./src/index.ts",
   "scripts": {
     "build": "rslib build",
