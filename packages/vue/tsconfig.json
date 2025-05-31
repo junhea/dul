@@ -1,12 +1,12 @@
 {
   "extends": "@duljs/config/tsconfig",
   "compilerOptions": {
-    "rootDir": ".",
-    "outDir": "dist",
+    "rootDir": "./src",
+    "outDir": "./dist",
     "emitDeclarationOnly": true,
     "skipLibCheck": true,
     "jsxImportSource": "vue"
   },
   "lib": ["dom"],
-  "include": ["src", "src/types.d.ts"]
+  "include": ["./src", "./src/types.d.ts"]
 }

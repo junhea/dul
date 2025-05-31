@@ -1,9 +1,9 @@
 {
   "extends": "@duljs/config/tsconfig",
   "compilerOptions": {
-    "rootDir": ".",
-    "outDir": "dist"
+    "rootDir": "./src",
+    "outDir": "./dist"
   },
   "lib": ["dom"],
-  "include": ["src"]
+  "include": ["./src"]
 }
