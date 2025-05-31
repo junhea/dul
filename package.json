@@ -1,0 +1,30 @@
+{
+  "private": true,
+  "name": "dul",
+  "description": "minimal canvas 2d renderer for js",
+  "author": "Junhea Hong (https://github.com/junhea/)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/junhea/dul"
+  },
+  "license": "MIT",
+  "version": "0.0.2",
+  "scripts": {
+    "build": "npm run build --workspaces --if-present"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "prettier": {
+    "semi": false,
+    "tabWidth": 2,
+    "useTabs": false,
+    "singleQuote": true
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "config"
+    ]
+  }
+}

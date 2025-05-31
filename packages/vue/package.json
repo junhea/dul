@@ -1,0 +1,35 @@
+{
+  "private": true,
+  "name": "@duljs/vue",
+  "description": "minimal canvas 2d renderer",
+  "author": "Junhea Hong (https://github.com/junhea/)",
+  "keywords": [
+    "vue",
+    "canvas",
+    "2d"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/junhea/dul.git"
+  },
+  "license": "MIT",
+  "version": "1.0.0",
+  "exports": "./src/index.ts",
+  "scripts": {
+    "build": "rslib build && vue-tsc",
+    "postbuild": "node ../scripts/postbuild.cjs"
+  },
+  "devDependencies": {
+    "@rslib/core": "^0.9.1",
+    "rsbuild-plugin-unplugin-vue": "^0.1.0",
+    "typescript": "^5.8.3",
+    "vue-tsc": "^2.2.10"
+  },
+  "peerDependencies": {
+    "@duljs/core": "^1.0.0",
+    "vue": "^3.2.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
