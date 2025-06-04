@@ -60,7 +60,8 @@ export class Object2D implements Metadata, Object2DProps, Renderable {
     this.children.forEach((v) => v.render(renderer, newAnchor))
   }
 
-  renderSelf(_renderer: DulRenderer, _anchor?: Coord) {
+  // @ts-ignore: unused variable
+  renderSelf(renderer: DulRenderer, anchor?: Coord) {
     // empty
   }
 
