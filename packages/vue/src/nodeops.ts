@@ -16,6 +16,21 @@ const parsePropKey = (maybeKebab: string) =>
     })
     .join('')
 
+const parseProps = (
+  props:
+    | (VNodeProps & {
+        [key: string]: any
+      })
+    | null
+    | undefined
+) => {
+  if (!props) return props
+  Object.entries(props).reduce(
+    (acc, [k, v]) => ({ ...acc, [parsePropKey(k)]: v }),
+    {} as { [key: string]: any }
+  )
+}
+
 export const nodeops: () => RendererOptions<
   Object2D,
   Object2D | null
@@ -27,6 +42,8 @@ export const nodeops: () => RendererOptions<
     if (!type.startsWith('Dul')) {
       return null
     }
+
+    const props = parseProps(vnodeProps)
     const name = type.replace('Dul', '')
     if (!isObject2DKey(name)) {
       return null
@@ -35,7 +52,7 @@ export const nodeops: () => RendererOptions<
     if (!targetObj) {
       return null
     }
-    return new targetObj(vnodeProps as any)
+    return new targetObj(props as any)
   },
   insert(el, parent) {
     if (!el) {
