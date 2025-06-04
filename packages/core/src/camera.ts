@@ -7,6 +7,7 @@ export type PointerState =
 
 const pointerStateInitializer = (): PointerState => ({ status: 'up' })
 
+const deltaBound = boundNumber(-10, 10)
 const zoomBound = boundNumber(0.1, 20)
 
 export class DulCamera {
@@ -59,7 +60,7 @@ export class DulCamera {
 
   wheelHandler = (e: WheelEvent) => {
     e.preventDefault()
-    this.zoom = zoomBound(this.zoom - (e.deltaY * this.zoom) / 100)
+    this.zoom = zoomBound(this.zoom - (deltaBound(e.deltaY) * this.zoom) / 100)
   }
 
   destroy() {
