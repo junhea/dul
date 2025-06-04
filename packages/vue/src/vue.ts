@@ -1,4 +1,4 @@
-import { isObject2DKey } from './nodeops'
+import { isObject2DKey, isPrimitiveKey } from './nodeops'
 
 import { Object2D, object2DPrimitives } from '@duljs/core'
 import { DefineComponent } from 'vue'
@@ -13,6 +13,10 @@ type VueObject2DComponent = {
     ObjectClassParams<(typeof object2DPrimitives)[Name]> &
       Partial<Object2DPointerEvents>
   >
+} & {
+  DulObject2D: DefineComponent<
+    Partial<Object2D> & Partial<Object2DPointerEvents>
+  >
 }
 
 declare module 'vue' {
@@ -21,5 +25,6 @@ declare module 'vue' {
 
 export const isDulElement = (tag: string): boolean => {
   if (!tag.startsWith('Dul')) return false
-  return isObject2DKey(tag.replace('Dul', ''))
+  const name = tag.replace('Dul', '')
+  return isObject2DKey(name) || isPrimitiveKey(name)
 }

@@ -1,11 +1,13 @@
 import { Object2D, object2DPrimitives } from '@duljs/core'
-import { RendererOptions } from 'vue'
+import { RendererOptions, VNodeProps } from 'vue'
 
-type Object2DKey = keyof typeof object2DPrimitives
-const object2DKeys = Object.keys(object2DPrimitives) as Object2DKey[]
+type PrimitiveKey = keyof typeof object2DPrimitives
+const primitiveKeys = [...Object.keys(object2DPrimitives)] as PrimitiveKey[]
 
-export const isObject2DKey = (key: string): key is Object2DKey =>
-  object2DKeys.includes(key as Object2DKey)
+export const isPrimitiveKey = (key: string): key is PrimitiveKey =>
+  primitiveKeys.includes(key as PrimitiveKey)
+
+export const isObject2DKey = (key: string) => key === 'Object2D'
 
 const parsePropKey = (maybeKebab: string) =>
   maybeKebab
@@ -36,7 +38,7 @@ export const nodeops: () => RendererOptions<
   Object2D | null
 > = () => ({
   createElement(type, _namespace, _isCustomizedBuiltIn, vnodeProps) {
-    if (type === 'template' || type === 'BASE') {
+    if (type === 'template') {
       return null
     }
     if (!type.startsWith('Dul')) {
@@ -45,7 +47,14 @@ export const nodeops: () => RendererOptions<
 
     const props = parseProps(vnodeProps)
     const name = type.replace('Dul', '')
-    if (!isObject2DKey(name)) {
+
+    if (isObject2DKey(name)) {
+      const obj = new Object2D({})
+      Object.assign(obj, props)
+      return obj
+    }
+
+    if (!isPrimitiveKey(name)) {
       return null
     }
     const targetObj = object2DPrimitives[name]
