@@ -108,7 +108,7 @@ export class Text extends Object2D implements TextProps {
     renderer.ctx.fillStyle = this.fillStyle
     renderer.ctx.textAlign = this.textAlign
     renderer.ctx.textBaseline = this.textBaseline
-    renderer.ctx.font = `${this.fontSize * multiplier}px`
+    renderer.ctx.font = `${this.fontSize * multiplier}px sans-serif`
     renderer.ctx.fillText(this.text, x + w / 2, y + h / 2 + w)
   }
 }
