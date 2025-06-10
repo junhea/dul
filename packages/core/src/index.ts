@@ -1,3 +1,5 @@
+import { Object2D } from './object'
+
 export * from './util'
 export * from './camera'
 export * from './renderer'
@@ -12,4 +14,10 @@ export interface Coord {
 export interface Dimension {
   w: number
   h: number
+}
+
+export interface FrameContext {
+  anchor?: Coord
+  time: DOMHighResTimeStamp
+  object: Object2D
 }

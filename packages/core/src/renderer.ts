@@ -45,14 +45,16 @@ export class DulRenderer {
     }
   }
 
-  render() {
+  render(time: DOMHighResTimeStamp) {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-    this.scene.children.forEach((object) => object.render(this))
+    this.scene.children.forEach((object) =>
+      object.render(this, { time, object })
+    )
   }
 
   requestRender() {
-    requestAnimationFrame(() => {
-      this.render()
+    requestAnimationFrame((time) => {
+      this.render(time)
       this.requestRender()
     })
   }

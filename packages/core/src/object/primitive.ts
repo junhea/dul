@@ -1,5 +1,5 @@
 import { DulRenderer } from '../renderer'
-import type { Coord } from '..'
+import type { Coord, FrameContext } from '..'
 import { defaultObject2DProps, Object2D, Object2DProps } from './base'
 
 // Scene
@@ -46,10 +46,10 @@ export class Rect extends Object2D implements RectProps {
     this.lineWidth = lineWidth
   }
 
-  renderSelf(renderer: DulRenderer, anchor?: Coord): void {
+  renderSelf(renderer: DulRenderer, context: FrameContext): void {
     const { x, y, w, h, multiplier } = renderer.translateCoordDimension(
       this,
-      anchor
+      context.anchor
     )
     renderer.ctx.fillStyle = this.fillStyle
     renderer.ctx.fillRect(x, y, w, h)
@@ -100,10 +100,10 @@ export class Text extends Object2D implements TextProps {
     this.textBaseline = textBaseline
   }
 
-  renderSelf(renderer: DulRenderer, anchor?: Coord): void {
+  renderSelf(renderer: DulRenderer, context: FrameContext): void {
     const { x, y, w, h, multiplier } = renderer.translateCoordDimension(
       this,
-      anchor
+      context.anchor
     )
     renderer.ctx.fillStyle = this.fillStyle
     renderer.ctx.textAlign = this.textAlign
@@ -152,8 +152,8 @@ export class Line extends Object2D implements LineProps {
     this.lineJoin = lineJoin
   }
 
-  renderSelf(renderer: DulRenderer, anchor?: Coord): void {
-    const newAnchor = this.getAnchor(anchor)
+  renderSelf(renderer: DulRenderer, context: FrameContext): void {
+    const newAnchor = this.getAnchor(context.anchor)
     renderer.ctx.beginPath()
     renderer.ctx.lineCap = this.lineCap
     renderer.ctx.lineJoin = this.lineJoin
@@ -198,16 +198,22 @@ export class List extends Object2D implements ListProps {
     this.gap = gap
   }
 
-  renderChildren(renderer: DulRenderer, anchor?: Coord) {
-    const newAnchor = this.getAnchor(anchor)
+  renderChildren(renderer: DulRenderer, context: FrameContext) {
+    const newAnchor = this.getAnchor(context.anchor)
     let offset = 0
     for (const child of this.children) {
       if (this.direction === 'row') {
-        child.render(renderer, { ...newAnchor, x: newAnchor.x + offset })
+        child.render(renderer, {
+          ...context,
+          anchor: { ...newAnchor, x: newAnchor.x + offset },
+        })
         this.h = Math.max(this.h, child.h)
         offset += child.w
       } else if (this.direction === 'column') {
-        child.render(renderer, { ...newAnchor, y: newAnchor.y + offset })
+        child.render(renderer, {
+          ...context,
+          anchor: { ...newAnchor, y: newAnchor.y + offset },
+        })
         this.w = Math.max(this.w, child.w)
         offset += child.h
       }

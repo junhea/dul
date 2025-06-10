@@ -1,5 +1,5 @@
 import { DulRenderer } from '../renderer'
-import type { Coord, Dimension } from '..'
+import type { Coord, Dimension, FrameContext } from '..'
 
 interface Metadata {
   __type: string
@@ -9,7 +9,7 @@ interface Metadata {
 }
 
 interface Renderable {
-  render: (renderer: DulRenderer, anchor: Coord) => void
+  render: (renderer: DulRenderer, context: FrameContext) => void
 }
 
 export type Object2DProps = Coord & Dimension
@@ -44,24 +44,24 @@ export class Object2D implements Metadata, Object2DProps, Renderable {
     obj.parent = this
   }
 
-  render(renderer: DulRenderer, anchor?: Coord) {
-    this.renderSelf(renderer, anchor)
-    this.renderChildren(renderer, anchor)
+  render(renderer: DulRenderer, context: FrameContext) {
+    this.renderSelf(renderer, context)
+    this.renderChildren(renderer, context)
     this.calculatedBounds = {
-      x: (anchor?.x ?? 0) + this.x,
-      y: (anchor?.y ?? 0) + this.y,
+      x: (context.anchor?.x ?? 0) + this.x,
+      y: (context.anchor?.y ?? 0) + this.y,
       w: this.w,
       h: this.h,
     }
   }
 
-  renderChildren(renderer: DulRenderer, anchor?: Coord) {
-    const newAnchor = this.getAnchor(anchor)
-    this.children.forEach((v) => v.render(renderer, newAnchor))
+  renderChildren(renderer: DulRenderer, context: FrameContext) {
+    const anchor = this.getAnchor(context.anchor)
+    this.children.forEach((v) => v.render(renderer, { ...context, anchor }))
   }
 
   // @ts-ignore: unused variable
-  renderSelf(renderer: DulRenderer, anchor?: Coord) {
+  renderSelf(renderer: DulRenderer, context: FrameContext) {
     // empty
   }
 
