@@ -7,20 +7,21 @@ export type PointerState =
 
 const pointerStateInitializer = (): PointerState => ({ status: 'up' })
 
-const deltaBound = boundNumber(-10, 10)
-const zoomBound = boundNumber(0.1, 20)
-
 export class DulCamera {
   public pos: Coord
   public zoom: number
   private canvas: HTMLCanvasElement
   public pointer: PointerState
+  deltaBound: ReturnType<typeof boundNumber>
+  zoomBound: ReturnType<typeof boundNumber>
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas
     this.pos = { x: 0, y: 0 }
     this.zoom = 1
     this.pointer = pointerStateInitializer()
+    this.deltaBound = boundNumber(-10, 10)
+    this.zoomBound = boundNumber(0.1, 20)
 
     window.addEventListener('pointerup', this.pointerupHandler)
     canvas.addEventListener('pointermove', this.pointermoveHandler)
@@ -60,7 +61,9 @@ export class DulCamera {
 
   wheelHandler = (e: WheelEvent) => {
     e.preventDefault()
-    this.zoom = zoomBound(this.zoom - (deltaBound(e.deltaY) * this.zoom) / 100)
+    this.zoom = this.zoomBound(
+      this.zoom - (this.deltaBound(e.deltaY) * this.zoom) / 100
+    )
   }
 
   destroy() {
