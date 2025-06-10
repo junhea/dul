@@ -21,6 +21,8 @@ const slots = defineSlots<{ default: () => any }>()
 const canvasRef = shallowRef<HTMLCanvasElement | null>(null)
 const rendererRef = shallowRef<DulRenderer | null>(null)
 
+defineExpose({ canvasRef, rendererRef })
+
 usePointerEvents(canvasRef, rendererRef)
 
 const internalRoot = defineComponent({
