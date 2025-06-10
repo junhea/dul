@@ -4,6 +4,13 @@ import { ref, ShallowRef, watchEffect } from 'vue'
 export type Object2DWithEventHandlers = Object2D &
   Partial<Object2DPointerEvents>
 
+export interface DulPointerEvent {
+  pointerEvent: PointerEvent
+  renderer: DulRenderer
+  object: Object2D
+  rayCaster: RayCaster
+}
+
 export const getRelativePointer = (
   canvas: HTMLCanvasElement,
   renderer: DulRenderer,
@@ -53,8 +60,8 @@ export function useRelativePointer(
 }
 
 export interface Object2DPointerEvents {
-  onPointerDown: () => void
-  onPointerUp: () => void
+  onPointerDown: (event: DulPointerEvent) => void
+  onPointerUp: (event: DulPointerEvent) => void
 }
 
 export function usePointerEvents(
@@ -72,7 +79,14 @@ export function usePointerEvents(
         const pos = getRelativePointer(canvas, renderer, e.clientX, e.clientY)
         rayCaster.setRayCoord(pos)
         const targets = rayCaster.intersectObjects(renderer.scene.children)
-        targets.forEach((v) => (v as Object2DWithEventHandlers)[eventName]?.())
+        targets.forEach((v) =>
+          (v as Object2DWithEventHandlers)[eventName]?.({
+            pointerEvent: e,
+            object: v,
+            renderer,
+            rayCaster,
+          })
+        )
       }
 
     const onPointerUp = pointerEventHandler('onPointerUp')
