@@ -5,7 +5,7 @@ export class DulRenderer {
   ctx: CanvasRenderingContext2D
   scene: Scene
   camera: DulCamera
-  private canvas: HTMLCanvasElement
+  canvas: HTMLCanvasElement
   private resizeObserver: ResizeObserver
 
   constructor(canvas: HTMLCanvasElement) {
