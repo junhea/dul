@@ -7,8 +7,10 @@ import { DulRenderer } from '@duljs/core'
 import {
   createRenderer,
   defineComponent,
-  Fragment,
+  getCurrentInstance,
   h,
+  provide,
+  renderSlot,
   shallowRef,
   watchEffect,
 } from 'vue'
@@ -25,9 +27,26 @@ defineExpose({ canvasRef, rendererRef })
 
 usePointerEvents(canvasRef, rendererRef)
 
+const parent = getCurrentInstance()?.parent
+
 const internalRoot = defineComponent({
   setup() {
-    return () => h(Fragment, null, slots.default())
+    // recursively get all provides
+    const provides: { [k: string | symbol]: any } = {}
+    function mergeProvides(instance: any) {
+      if (!instance) {
+        return
+      }
+      if (instance.parent) {
+        mergeProvides(instance.parent)
+      }
+      if (instance.provides) {
+        Object.assign(provides, instance.provides)
+      }
+    }
+    mergeProvides(parent)
+    Object.entries(provides).forEach(([k, v]) => provide(k, v))
+    return () => renderSlot(slots, 'default')
   },
 })
 
