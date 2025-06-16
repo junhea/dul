@@ -27,12 +27,15 @@ defineExpose({ canvasRef, rendererRef })
 
 usePointerEvents(canvasRef, rendererRef)
 
-const parent = getCurrentInstance()?.parent
+const currentInstance = getCurrentInstance()
 
 const internalRoot = defineComponent({
   setup() {
-    // recursively get all provides
     const provides: { [k: string | symbol]: any } = {}
+    // clone app context provides
+    Object.assign(provides, currentInstance?.appContext.provides)
+
+    // recursively get all provides
     function mergeProvides(instance: any) {
       if (!instance) {
         return
@@ -44,7 +47,7 @@ const internalRoot = defineComponent({
         Object.assign(provides, instance.provides)
       }
     }
-    mergeProvides(parent)
+    mergeProvides(currentInstance?.parent)
     Object.entries(provides).forEach(([k, v]) => provide(k, v))
     return () => renderSlot(slots, 'default')
   },
