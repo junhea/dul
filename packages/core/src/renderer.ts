@@ -61,17 +61,29 @@ export class DulRenderer {
     }
   }
 
+  rendererToCanvasCoords({ x, y }: Coord): Coord {
+    return {
+      x: (x + this.camera.pos.x) * this.camera.zoom + this.canvas.width / 2,
+      y: (y + this.camera.pos.y) * this.camera.zoom + this.canvas.height / 2,
+    }
+  }
+
+  rendererToScreenCoords(coords: Coord): Coord {
+    const canvasDimensions = this.canvas.getBoundingClientRect()
+    const { x, y } = this.rendererToCanvasCoords(coords)
+    return {
+      x: x + canvasDimensions.x,
+      y: y + canvasDimensions.y,
+    }
+  }
+
   translateCoordDimension(
     { x, y, w, h }: Coord & Dimension,
     anchor: Coord = { x: 0, y: 0 }
   ) {
     const multiplier = this.getCoordMultiplier()
     return {
-      x:
-        (x + anchor.x + this.camera.pos.x) * multiplier + this.canvas.width / 2,
-      y:
-        (y + anchor.y + this.camera.pos.y) * multiplier +
-        this.canvas.height / 2,
+      ...this.rendererToCanvasCoords({ x: x + anchor.x, y: y + anchor.y }),
       w: w * multiplier,
       h: h * multiplier,
       multiplier,
