@@ -5,7 +5,7 @@ export type Object2DWithEventHandlers = Object2D &
   Partial<Object2DPointerEvents>
 
 export interface DulPointerEvent {
-  pointerEvent: PointerEvent
+  pointerEvent?: PointerEvent
   renderer: DulRenderer
   object: Object2D
   rayCaster: RayCaster
@@ -54,15 +54,26 @@ export function useRelativePointer(
     cleanup(() => {
       canvas.removeEventListener('pointermove', onPointerMove)
     })
-
-    return { pos }
   })
+  return { pos }
 }
 
 export interface Object2DPointerEvents {
   onPointerDown: (event: DulPointerEvent) => void
   onPointerUp: (event: DulPointerEvent) => void
+  onPointerEnter: (event: DulPointerEvent) => void
+  onPointerLeave: (event: DulPointerEvent) => void
 }
+
+const eventObjectBuilder =
+  (renderer: DulRenderer, rayCaster: RayCaster) =>
+  (object: Object2D, pointerEvent?: PointerEvent) =>
+    ({
+      renderer,
+      rayCaster,
+      pointerEvent,
+      object,
+    } satisfies DulPointerEvent)
 
 export function usePointerEvents(
   canvasRef: ShallowRef<HTMLCanvasElement | null>,
@@ -74,30 +85,59 @@ export function usePointerEvents(
     const renderer = rendererRef.value
     const rayCaster = new RayCaster()
 
+    let pointerPos: Coord | null = null
+    let prevHoveringObjects: Set<Object2D> = new Set()
+
+    const createEventObject = eventObjectBuilder(renderer, rayCaster)
+
     const pointerEventHandler =
       (eventName: keyof Object2DPointerEvents) => (e: PointerEvent) => {
         const pos = getRelativePointer(canvas, renderer, e.clientX, e.clientY)
         rayCaster.setRayCoord(pos)
         const targets = rayCaster.intersectObjects(renderer.scene.children)
         targets.forEach((v) =>
-          (v as Object2DWithEventHandlers)[eventName]?.({
-            pointerEvent: e,
-            object: v,
-            renderer,
-            rayCaster,
-          })
+          (v as Object2DWithEventHandlers)[eventName]?.(createEventObject(v, e))
         )
       }
 
     const onPointerUp = pointerEventHandler('onPointerUp')
     const onPointerDown = pointerEventHandler('onPointerDown')
+    const onPointerMove = (e: PointerEvent) => {
+      pointerPos = getRelativePointer(canvas, renderer, e.clientX, e.clientY)
+    }
+    const onBeforeRender = () => {
+      if (!pointerPos) return
+      rayCaster.setRayCoord(pointerPos)
+
+      const targets = rayCaster.intersectObjects(renderer.scene.children)
+      const currentHoveringObjects = new Set(targets)
+
+      const pointerLeaveTargets = prevHoveringObjects.difference(
+        currentHoveringObjects
+      )
+      pointerLeaveTargets.forEach((v) =>
+        (v as Object2DWithEventHandlers).onPointerLeave?.(createEventObject(v))
+      )
+
+      const pointerEnterTargets =
+        currentHoveringObjects.difference(prevHoveringObjects)
+      pointerEnterTargets.forEach((v) =>
+        (v as Object2DWithEventHandlers).onPointerEnter?.(createEventObject(v))
+      )
+
+      prevHoveringObjects = currentHoveringObjects
+    }
+
+    renderer.callbacks.onBeforeRender = onBeforeRender
 
     canvas.addEventListener('pointerup', onPointerUp)
     canvas.addEventListener('pointerdown', onPointerDown)
+    canvas.addEventListener('pointermove', onPointerMove)
 
     cleanup(() => {
       canvas.removeEventListener('pointerup', onPointerUp)
       canvas.removeEventListener('pointerdown', onPointerDown)
+      canvas.removeEventListener('pointermove', onPointerMove)
     })
   })
 }
