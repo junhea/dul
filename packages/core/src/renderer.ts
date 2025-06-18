@@ -50,12 +50,14 @@ export class DulRenderer {
   }
 
   screenToRendererCoords({ x, y }: Coord): Coord {
-    {
-      const canvasDimensions = this.canvas.getBoundingClientRect()
-      return {
-        x: (x - canvasDimensions.x) / this.camera.zoom - this.camera.pos.x,
-        y: (y - canvasDimensions.y) / this.camera.zoom - this.camera.pos.y,
-      }
+    const canvasDimensions = this.canvas.getBoundingClientRect()
+    return {
+      x:
+        (x - canvasDimensions.x - this.canvas.width / 2) / this.camera.zoom -
+        this.camera.pos.x,
+      y:
+        (y - canvasDimensions.y - this.canvas.height / 2) / this.camera.zoom -
+        this.camera.pos.y,
     }
   }
 
@@ -65,8 +67,11 @@ export class DulRenderer {
   ) {
     const multiplier = this.getCoordMultiplier()
     return {
-      x: (x + anchor.x + this.camera.pos.x) * multiplier,
-      y: (y + anchor.y + this.camera.pos.y) * multiplier,
+      x:
+        (x + anchor.x + this.camera.pos.x) * multiplier + this.canvas.width / 2,
+      y:
+        (y + anchor.y + this.camera.pos.y) * multiplier +
+        this.canvas.height / 2,
       w: w * multiplier,
       h: h * multiplier,
       multiplier,
