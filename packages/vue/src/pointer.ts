@@ -11,23 +11,6 @@ export interface DulPointerEvent {
   rayCaster: RayCaster
 }
 
-export const getRelativePointer = (
-  canvas: HTMLCanvasElement,
-  renderer: DulRenderer,
-  pointerClientX: number,
-  pointerClientY: number
-): Coord => {
-  const canvasDimensions = canvas.getBoundingClientRect()
-  return {
-    x:
-      (pointerClientX - canvasDimensions.x) / renderer.camera.zoom -
-      renderer.camera.pos.x,
-    y:
-      (pointerClientY - canvasDimensions.y) / renderer.camera.zoom -
-      renderer.camera.pos.y,
-  }
-}
-
 export function useRelativePointer(
   canvasRef: ShallowRef<HTMLCanvasElement | null>,
   rendererRef: ShallowRef<DulRenderer | null>
@@ -92,7 +75,10 @@ export function usePointerEvents(
 
     const pointerEventHandler =
       (eventName: keyof Object2DPointerEvents) => (e: PointerEvent) => {
-        const pos = getRelativePointer(canvas, renderer, e.clientX, e.clientY)
+        const pos = renderer.screenToRendererCoords({
+          x: e.clientX,
+          y: e.clientY,
+        })
         rayCaster.setRayCoord(pos)
         const targets = rayCaster.intersectObjects(renderer.scene.children)
         targets.forEach((v) =>
@@ -103,7 +89,10 @@ export function usePointerEvents(
     const onPointerUp = pointerEventHandler('onPointerUp')
     const onPointerDown = pointerEventHandler('onPointerDown')
     const onPointerMove = (e: PointerEvent) => {
-      pointerPos = getRelativePointer(canvas, renderer, e.clientX, e.clientY)
+      pointerPos = renderer.screenToRendererCoords({
+        x: e.clientX,
+        y: e.clientY,
+      })
     }
     const onBeforeRender = () => {
       if (!pointerPos) return

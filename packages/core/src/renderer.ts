@@ -49,6 +49,16 @@ export class DulRenderer {
     return this.camera.zoom
   }
 
+  screenToRendererCoords({ x, y }: Coord): Coord {
+    {
+      const canvasDimensions = this.canvas.getBoundingClientRect()
+      return {
+        x: (x - canvasDimensions.x) / this.camera.zoom - this.camera.pos.x,
+        y: (y - canvasDimensions.y) / this.camera.zoom - this.camera.pos.y,
+      }
+    }
+  }
+
   translateCoordDimension(
     { x, y, w, h }: Coord & Dimension,
     anchor: Coord = { x: 0, y: 0 }
