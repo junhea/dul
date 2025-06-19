@@ -13,7 +13,7 @@
     "url": "git+https://github.com/junhea/dul.git"
   },
   "license": "MIT",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "exports": "./src/index.ts",
   "scripts": {
     "build": "rslib build && vue-tsc",
