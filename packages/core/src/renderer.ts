@@ -1,9 +1,12 @@
 import { DulCamera } from './camera'
 import { Coord, Dimension, Scene } from '.'
 
-type RenderCallback = (time: DOMHighResTimeStamp, renderer: DulRenderer) => void
+export type RenderCallback = (
+  time: DOMHighResTimeStamp,
+  renderer: DulRenderer
+) => void
 
-interface RenderCallbackMap {
+export interface RenderCallbackMap {
   onBeforeRender: RenderCallback
   onAfterRender: RenderCallback
 }
