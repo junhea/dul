@@ -3,18 +3,24 @@ import { Coord, Dimension, Scene } from '.'
 
 type RenderCallback = (time: DOMHighResTimeStamp, renderer: DulRenderer) => void
 
-export interface RenderCallbacks {
-  onBeforeRender?: RenderCallback
-  onAfterRender?: RenderCallback
+interface RenderCallbackMap {
+  onBeforeRender: RenderCallback
+  onAfterRender: RenderCallback
+}
+
+type RenderCallbacks = {
+  [x in keyof RenderCallbackMap]: Set<RenderCallbackMap[x]>
 }
 
 export interface DulRendererOptions {
   callbacks?: RenderCallbacks
 }
 
-const defaultDulRendererOptions: Required<DulRendererOptions> = {
-  callbacks: {},
-}
+const defaultCallbacks = () =>
+  ({
+    onBeforeRender: new Set(),
+    onAfterRender: new Set(),
+  } satisfies RenderCallbacks)
 
 export class DulRenderer {
   ctx: CanvasRenderingContext2D
@@ -24,10 +30,8 @@ export class DulRenderer {
   callbacks: RenderCallbacks
   private resizeObserver: ResizeObserver
 
-  constructor(canvas: HTMLCanvasElement, options?: DulRendererOptions) {
-    const { callbacks } = { ...defaultDulRendererOptions, ...options }
+  constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas
-    this.callbacks = callbacks
     const ctx = canvas.getContext('2d')
     if (!ctx) throw 'current browser does not support canvas2d'
     this.ctx = ctx
@@ -35,6 +39,7 @@ export class DulRenderer {
     this.camera = new DulCamera(canvas)
     this.resizeObserver = new ResizeObserver(this.resizeHandler)
     this.resizeObserver.observe(canvas)
+    this.callbacks = defaultCallbacks()
     this.requestRender()
   }
 
@@ -77,6 +82,20 @@ export class DulRenderer {
     }
   }
 
+  addCallback<K extends keyof RenderCallbacks>(
+    type: K,
+    callback: RenderCallbackMap[K]
+  ) {
+    this.callbacks[type].add(callback)
+  }
+
+  removeCallback<K extends keyof RenderCallbacks>(
+    type: K,
+    callback: RenderCallbackMap[K]
+  ) {
+    this.callbacks[type].delete(callback)
+  }
+
   translateCoordDimension(
     { x, y, w, h }: Coord & Dimension,
     anchor: Coord = { x: 0, y: 0 }
@@ -91,12 +110,12 @@ export class DulRenderer {
   }
 
   render(time: DOMHighResTimeStamp) {
-    this.callbacks?.onBeforeRender?.(time, this)
+    this.callbacks?.onBeforeRender?.forEach((v) => v?.(time, this))
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
     this.scene.children.forEach((object) =>
       object.render(this, { time, object })
     )
-    this.callbacks?.onAfterRender?.(time, this)
+    this.callbacks?.onAfterRender?.forEach((v) => v?.(time, this))
   }
 
   requestRender() {
