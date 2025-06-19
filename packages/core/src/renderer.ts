@@ -3,6 +3,7 @@ import { Coord, Dimension, Scene } from '.'
 
 export type RenderCallback = (
   time: DOMHighResTimeStamp,
+  timeDelta: DOMHighResTimeStamp,
   renderer: DulRenderer
 ) => void
 
@@ -31,6 +32,7 @@ export class DulRenderer {
   camera: DulCamera
   canvas: HTMLCanvasElement
   callbacks: RenderCallbacks
+  prevTime: DOMHighResTimeStamp = 0
   private resizeObserver: ResizeObserver
 
   constructor(canvas: HTMLCanvasElement) {
@@ -113,12 +115,14 @@ export class DulRenderer {
   }
 
   render(time: DOMHighResTimeStamp) {
-    this.callbacks?.onBeforeRender?.forEach((v) => v?.(time, this))
+    const timeDelta = time - this.prevTime
+    this.callbacks?.onBeforeRender?.forEach((v) => v?.(time, timeDelta, this))
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
     this.scene.children.forEach((object) =>
       object.render(this, { time, object })
     )
-    this.callbacks?.onAfterRender?.forEach((v) => v?.(time, this))
+    this.callbacks?.onAfterRender?.forEach((v) => v?.(time, timeDelta, this))
+    this.prevTime = time
   }
 
   requestRender() {
