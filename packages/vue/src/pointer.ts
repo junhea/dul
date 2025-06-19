@@ -117,13 +117,13 @@ export function usePointerEvents(
       prevHoveringObjects = currentHoveringObjects
     }
 
-    renderer.callbacks.onBeforeRender = onBeforeRender
-
+    renderer.addCallback('onBeforeRender', onBeforeRender)
     canvas.addEventListener('pointerup', onPointerUp)
     canvas.addEventListener('pointerdown', onPointerDown)
     canvas.addEventListener('pointermove', onPointerMove)
 
     cleanup(() => {
+      renderer.removeCallback('onBeforeRender', onBeforeRender)
       canvas.removeEventListener('pointerup', onPointerUp)
       canvas.removeEventListener('pointerdown', onPointerDown)
       canvas.removeEventListener('pointermove', onPointerMove)
