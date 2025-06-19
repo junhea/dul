@@ -16,6 +16,7 @@ import {
 } from 'vue'
 import { nodeops } from './nodeops'
 import { usePointerEvents } from './pointer'
+import { provideDulContext } from './context'
 
 defineProps<{ width?: string; height?: string }>()
 
@@ -49,6 +50,8 @@ const internalRoot = defineComponent({
     }
     mergeProvides(currentInstance?.parent)
     Object.entries(provides).forEach(([k, v]) => provide(k, v))
+
+    provideDulContext(rendererRef)
     return () => renderSlot(slots, 'default')
   },
 })

@@ -1,4 +1,6 @@
 export * from './nodeops'
 export * from './pointer'
 export * from './vue'
+export * from './context'
+export * from './render-callback'
 export { default as Dul } from './Renderer.vue'
