@@ -117,10 +117,7 @@ export class DulRenderer {
   render(time: DOMHighResTimeStamp) {
     const timeDelta = time - this.prevTime
     this.callbacks?.onBeforeRender?.forEach((v) => v?.(time, timeDelta, this))
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-    this.scene.children.forEach((object) =>
-      object.render(this, { time, object })
-    )
+    this.scene.render(this, { time, object: this.scene, scene: this.scene })
     this.callbacks?.onAfterRender?.forEach((v) => v?.(time, timeDelta, this))
     this.prevTime = time
   }

@@ -53,6 +53,7 @@ export class Object2D implements Metadata, Object2DProps, Renderable {
       w: this.w,
       h: this.h,
     }
+    context.scene.onAfterObjectRender(this)
   }
 
   renderChildren(renderer: DulRenderer, context: FrameContext) {

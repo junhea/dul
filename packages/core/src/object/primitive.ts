@@ -5,8 +5,21 @@ import { defaultObject2DProps, Object2D, Object2DProps } from './base'
 // Scene
 export class Scene extends Object2D {
   __type = 'SCENE'
+  rendererdObjects: Object2D[] = []
   constructor() {
     super({})
+  }
+
+  render(renderer: DulRenderer, context: FrameContext) {
+    // clear canvas
+    renderer.ctx.clearRect(0, 0, renderer.canvas.width, renderer.canvas.height)
+    // reset renderedObjectList
+    this.rendererdObjects = []
+    super.render(renderer, context)
+  }
+
+  onAfterObjectRender(object: Object2D) {
+    this.rendererdObjects.push(object)
   }
 }
 
