@@ -17,7 +17,7 @@ export class RayCaster {
   setRayCoord(coord: Coord) {
     this.intersectionFilter = createIntersectionFilter(coord)
   }
-  intersectObjects(objects: Object2D[], recursive: boolean = true) {
+  intersectObjects(objects: Object2D[], recursive: boolean = false) {
     if (!this.intersectionFilter) return []
     const targets = recursive
       ? objects.reduce(flattenChildren, [] as Object2D[])
