@@ -80,7 +80,9 @@ export function usePointerEvents(
           y: e.clientY,
         })
         rayCaster.setRayCoord(pos)
-        const targets = rayCaster.intersectObjects(renderer.scene.children)
+        const targets = rayCaster.intersectObjects(
+          renderer.scene.rendererdObjects.toReversed()
+        )
         targets.forEach((v) =>
           (v as Object2DWithEventHandlers)[eventName]?.(createEventObject(v, e))
         )
@@ -98,7 +100,9 @@ export function usePointerEvents(
       if (!pointerPos) return
       rayCaster.setRayCoord(pointerPos)
 
-      const targets = rayCaster.intersectObjects(renderer.scene.children)
+      const targets = rayCaster.intersectObjects(
+        renderer.scene.rendererdObjects.toReversed()
+      )
       const currentHoveringObjects = new Set(targets)
 
       const pointerLeaveTargets = prevHoveringObjects.difference(
