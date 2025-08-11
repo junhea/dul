@@ -4,11 +4,34 @@ import { ref, ShallowRef, watchEffect } from 'vue'
 export type Object2DWithEventHandlers = Object2D &
   Partial<Object2DPointerEvents>
 
-export interface DulPointerEvent {
+export interface DulPointerEventProps {
   pointerEvent?: PointerEvent
   renderer: DulRenderer
   object: Object2D
   rayCaster: RayCaster
+}
+export class DulPointerEvent implements DulPointerEventProps {
+  pointerEvent?: PointerEvent
+  renderer: DulRenderer
+  object: Object2D
+  rayCaster: RayCaster
+  eventStopped: boolean = false
+
+  constructor({
+    object,
+    renderer,
+    rayCaster,
+    pointerEvent,
+  }: DulPointerEventProps) {
+    this.object = object
+    this.renderer = renderer
+    this.rayCaster = rayCaster
+    this.pointerEvent = pointerEvent
+  }
+
+  stopEvent() {
+    this.eventStopped = true
+  }
 }
 
 export function useRelativePointer(
@@ -51,12 +74,12 @@ export interface Object2DPointerEvents {
 const eventObjectBuilder =
   (renderer: DulRenderer, rayCaster: RayCaster) =>
   (object: Object2D, pointerEvent?: PointerEvent) =>
-    ({
+    new DulPointerEvent({
       renderer,
       rayCaster,
       pointerEvent,
       object,
-    } satisfies DulPointerEvent)
+    })
 
 export function usePointerEvents(
   canvasRef: ShallowRef<HTMLCanvasElement | null>,
@@ -83,9 +106,12 @@ export function usePointerEvents(
         const targets = rayCaster.intersectObjects(
           renderer.scene.rendererdObjects.toReversed()
         )
-        targets.forEach((v) =>
-          (v as Object2DWithEventHandlers)[eventName]?.(createEventObject(v, e))
-        )
+        targets.some((v) => {
+          const event = createEventObject(v, e)
+          ;(v as Object2DWithEventHandlers)[eventName]?.(event)
+          // check event stop flag
+          return event?.eventStopped
+        })
       }
 
     const onPointerUp = pointerEventHandler('onPointerUp')
